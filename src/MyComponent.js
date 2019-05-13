@@ -3,27 +3,30 @@
 import * as React from "react";
 import "./App.css";
 
-import type { MyPersonType, MoreDetailedPersonType } from "./MyPersonType";
+import type { PersonType } from "./PersonType";
 
 type MyComponentProps = {
   anInt: number,
   aString: string,
   aListItem: ?("one" | "of" | "these"),
   aJsxElement: React.Element<"div">,
-  // ======= Change To Array<?MyPersonType> to Demonstrate Type Expectation Inconsistency =======
-  anArrayOfMyModelObjects: Array<MyPersonType>,
+  // ======= Change To Array<?PersonType> to Demonstrate Type Expectation Inconsistency =======
+  anArrayOfMyModelObjects: Array<PersonType>,
   // ======= Talk about function typing and currying =======
-  onMutateModelName: (value: string) => MyPersonType,
-  onMutateModelAge: (value: number) => MyPersonType
+  onMutateModelName: (value: string) => PersonType,
+  onMutateModelAge: (value: number) => PersonType
 };
 
 export default class MyComponent extends React.Component<MyComponentProps> {
-  myMethod(s: string, i: number, arr: Array<MyPersonType>) {
+  myMethod(s: string, i: number, arr: Array<PersonType>) {
     return String([s, i, arr]);
   }
 
   // We're not even calling this method yet.. still works
-  methodThatTakesMyModelObjectAndMutatesIt(aModelInstance: MyPersonType) {
+  methodThatTakesMyModelObjectAndMutatesIt(
+    aModelInstance: PersonType,
+    modelArr: Array<PersonType>
+  ) {
     // ======= A Proper Assignment =======
     aModelInstance.name = "Steve";
 
@@ -36,8 +39,14 @@ export default class MyComponent extends React.Component<MyComponentProps> {
     // aModelInstance.undefinedProp = "anyOldValue";
     // ======= Undefined Property ======= (enable ?any typing above and demonstrate)
     // aModelInstance.moreDetailedProp = "any old value";
-    // ======= Access Undefined Prop =======
-    // console.log(aModelInstance.meme);
+    // ======= Access POSSIBLY Undefined Prop =======
+    modelArr.map(el => {
+      // el.address.street;
+      // access inside of a refinement
+      if (el.type === "detailedPerson") {
+        el.address.street;
+      }
+    });
   }
 
   render() {
@@ -49,5 +58,3 @@ export default class MyComponent extends React.Component<MyComponentProps> {
     return <div>{this.myMethod(aString, anInt, anArrayOfMyModelObjects)}</div>;
   }
 }
-
-export type { MyPersonType };

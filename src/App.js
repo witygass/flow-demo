@@ -5,29 +5,43 @@ import React from "react";
 import MyComponent from "./MyComponent";
 import "./App.css";
 
-import type { MyPersonType } from "./MyPersonType";
+import type {
+  PersonType,
+  SlimPersonType,
+  DetailedPersonType
+} from "./PersonType";
 
-const personInstanceJohn = {
-  // ======= Comment This Prop: Demonstrate Object / Variable Property Validation =======
+// Change both people to "PersonType" - show that flow can infer type
+const slimPersonJohn: PersonType = {
+  // ======= Comment Any of These Properties: Demonstrate Object / Variable Property Validation =======
+  type: "slimPerson",
   name: "John",
   birthday: new Date("2/2/1990"),
   age: 25
 };
 
+const detailedPersonJane: PersonType = {
+  type: "detailedPerson",
+  name: "Jane",
+  birthday: new Date("2/2/1990"),
+  age: 25,
+  address: { street: "Meme Street", number: 711 }
+};
+
 // ======= Naive Example of Property Assignment Handler =======
 const mutationHandler = (property: "name" | "age") => newValue => {
   if (property === "age") {
-    personInstanceJohn[property] = Number(newValue);
+    slimPersonJohn[property] = Number(newValue);
   } else if (property === "name") {
-    personInstanceJohn[property] = String(newValue);
+    slimPersonJohn[property] = String(newValue);
   }
 
   // ======= Uncomment: Demonstrate types incompatibility (newValue is an "any" type by default ->
   // because property could go into age or name props on the modelIstance, this is not okay
-  // personInstanceJohn[property] = newValue;
+  // slimPersonJohn[property] = newValue;
 
   // ======= Comment This Line: Demonstrate Return Type Validation =======
-  return personInstanceJohn;
+  return slimPersonJohn;
 };
 
 function App() {
@@ -39,10 +53,12 @@ function App() {
         // ======= Change to Span: Demonstrate JSX / React Element support =======
         <div>some useless text</div>
       }
-      myCustomObject={personInstanceJohn}
+      myCustomObject={slimPersonJohn}
       aListItem="one"
       anArrayOfMyModelObjects={[
-        personInstanceJohn
+        slimPersonJohn,
+        // as you can see, the more detailed person (including an address property) is still a person
+        detailedPersonJane
         // a disallowed type inside my array prop
         // ,"a"
       ]}
